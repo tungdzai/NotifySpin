@@ -1,9 +1,9 @@
 const axios = require('axios');
 const tough = require('tough-cookie');
-const {wrapper} = require('axios-cookiejar-support');
+const { wrapper } = require('axios-cookiejar-support');
 const fs = require('fs');
 const express = require('express');
-const {Server} = require('ws');
+const { Server } = require('ws');
 const app = express();
 const PORT = process.env.PORT || 8080;
 app.use(express.static('public'));
@@ -24,24 +24,25 @@ async function sendTelegramMessage(message) {
 const server = app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
 });
-const wss = new Server({server});
+
+const wss = new Server({ server });
 let validDataList = [];
 let checkAllGiftStatus = '';
+
 wss.on('connection', (ws) => {
     console.log('Client connected');
 
     if (validDataList.length > 0) {
-        ws.send(JSON.stringify({type: 'validDataList', data: validDataList}));
+        ws.send(JSON.stringify({ type: 'validDataList', data: validDataList }));
     }
     if (checkAllGiftStatus) {
-        ws.send(JSON.stringify({type: 'status', data: checkAllGiftStatus}));
+        ws.send(JSON.stringify({ type: 'status', data: checkAllGiftStatus }));
     }
 
     ws.on('close', () => {
         console.log('Client disconnected');
     });
 });
-
 
 function delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
@@ -55,7 +56,7 @@ async function authLogin(token, retries = 2) {
     }
     try {
         const jar = new tough.CookieJar();
-        const client = wrapper(axios.create({jar}));
+        const client = wrapper(axios.create({ jar }));
         const urlLogin = `https://var.fconline.garena.vn/auth/login/callback?access_token=${token}`;
         await client.get(urlLogin, {
             headers: {
@@ -63,7 +64,7 @@ async function authLogin(token, retries = 2) {
                 'sec-ch-ua-mobile': '?0',
                 'sec-ch-ua-platform': '"Windows"',
                 'Upgrade-Insecure-Requests': '1',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, như Gecko) Chrome/125.0.0.0 Safari/537.36',
                 'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7',
                 'Sec-Fetch-Site': 'cross-site',
                 'Sec-Fetch-Mode': 'navigate',
@@ -85,8 +86,8 @@ async function authLogin(token, retries = 2) {
             await sendTelegramMessage(message);
         }
     } catch (error) {
-        const message = `Lỗi xác thực:=${error.response.status}`
-        console.error(message)
+        const message = `Lỗi xác thực: ${error.response.status}`;
+        console.error(message);
         return await authLogin(token, retries - 1);
     }
 }
@@ -99,14 +100,14 @@ async function getInfo(cookie, retries = 3) {
     }
     try {
         const jar = new tough.CookieJar();
-        const client = wrapper(axios.create({jar}));
+        const client = wrapper(axios.create({ jar }));
         const urlGetPlayer = "https://var.fconline.garena.vn/api/player/get";
         const response = await client.get(urlGetPlayer, {
             headers: {
                 'sec-ch-ua': '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
                 'Accept': 'application/json, text/plain, */*',
                 'sec-ch-ua-mobile': '?0',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, như Gecko) Chrome/125.0.0.0 Safari/537.36',
                 'sec-ch-ua-platform': '"Windows"',
                 'Sec-Fetch-Site': 'same-origin',
                 'Sec-Fetch-Mode': 'cors',
@@ -132,14 +133,14 @@ async function spin(cookie, retries = 2) {
     }
     try {
         const jar = new tough.CookieJar();
-        const client = wrapper(axios.create({jar}));
+        const client = wrapper(axios.create({ jar }));
         const urlSpin = "https://var.fconline.garena.vn/api/lucky-draw-rewards/spin";
-        const response = await client.post(urlSpin, {"usePoint": true}, {
+        const response = await client.post(urlSpin, { "usePoint": true }, {
             headers: {
                 'sec-ch-ua': '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
                 'Accept': 'application/json, text/plain, */*',
                 'sec-ch-ua-mobile': '?0',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, như Gecko) Chrome/125.0.0.0 Safari/537.36',
                 'sec-ch-ua-platform': '"Windows"',
                 'Sec-Fetch-Site': 'same-origin',
                 'Sec-Fetch-Mode': 'cors',
@@ -147,15 +148,14 @@ async function spin(cookie, retries = 2) {
                 'host': 'var.fconline.garena.vn',
                 'Cookie': cookie
             }
-        })
-        return response.data
+        });
+        return response.data;
     } catch (error) {
         const message = `Lỗi spin: ${error.response.status}`;
-        console.log(message);
+        console.error(message);
         await sendTelegramMessage(message);
         return await spin(cookie, retries - 1);
     }
-
 }
 
 async function readTokensFromFile(filename) {
@@ -188,25 +188,24 @@ async function spinRewards() {
                             console.log(message);
                             const idBP = responseSpin.spinnedReward.id;
                             if (idBP !== 13) {
-                                const message = `Trúng thưởng: ${responseSpin.spinnedReward.name}-${responseSpin.spinnedReward.type}-${responseSpin.spinnedReward.giftCode}-${responseSpin.spinnedReward.shopeeCode}`;
                                 await sendTelegramMessage(message);
                             }
                         }
                         await delay(35000);
                     }
                 } else {
-                    const message = `Tài khoản không đủ điều khiện để quay${token}`;
+                    const message = `Tài khoản không đủ điều kiện để quay: ${token}`;
                     console.log(message);
                     await sendTelegramMessage(message);
                 }
             } else {
-                const message = `Không thể lấy thông tin người chưa của token: ${token}`;
-                console.log(message)
+                const message = `Không thể lấy thông tin người chơi của token: ${token}`;
+                console.log(message);
                 await sendTelegramMessage(message);
             }
         } else {
             const message = `Không thể lấy cookie của token: ${token}`;
-            console.log(message)
+            console.log(message);
             await sendTelegramMessage(message);
         }
     }
