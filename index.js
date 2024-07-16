@@ -153,15 +153,15 @@ async function spinRewards() {
                     for (let i = 0; i < totalSpin; i++) {
                         const responseSpin = await spin(cookie);
                         if (responseSpin) {
-                            const message = `Trúng thưởng: ${responseSpin.spinnedReward.name}-${responseSpin.spinnedReward.type}-${responseSpin.spinnedReward.giftCode}-${responseSpin.spinnedReward.shopeeCode}`;
+                            const message = `Trúng thưởng: ${responseSpin.spinnedReward.name}-${responseSpin.spinnedReward.type}-${responseSpin.giftCode}-${responseSpin.shopeeCode}`;
                             console.log(message);
                             const idBP = responseSpin.spinnedReward.id;
                             if (idBP !== 13) {
-                                const message = `Trúng thưởng: ${responseSpin.spinnedReward.name}-${responseSpin.spinnedReward.type}-${responseSpin.spinnedReward.giftCode}-${responseSpin.spinnedReward.shopeeCode}`;
+                                const message = `Trúng thưởng: ${responseSpin.spinnedReward.name}-${responseSpin.spinnedReward.type}-${responseSpin.giftCode}-${responseSpin.shopeeCode}`;
                                 await sendTelegramMessage(message);
                             }
                         }
-                        await delay(40000);
+                        await delay(30000);
                     }
                 } else {
                     const message = `Tài khoản không đủ điều khiện để quay${token}`;
