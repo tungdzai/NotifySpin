@@ -191,7 +191,7 @@ async function spinRewards() {
                                 await sendTelegramMessage(message);
                             }
                         }
-                        await delay(80000);
+                        await delay(35000);
                     }
                 }else {
                     const message = `Tài khoản không đủ điểm để quay`;
