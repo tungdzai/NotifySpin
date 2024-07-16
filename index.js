@@ -161,7 +161,7 @@ async function spinRewards() {
                                 await sendTelegramMessage(message);
                             }
                         }
-                        await delay(30000);
+                        await delay(20000);
                     }
                 } else {
                     const message = `Tài khoản không đủ điều khiện để quay${token}`;
