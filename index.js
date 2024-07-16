@@ -150,7 +150,8 @@ async function spin(cookie, retries = 2) {
         })
         return response.data
     } catch (error) {
-        const message = `Lỗi spin: ${error.response.status}`
+        const message = `Lỗi spin: ${error.response.status}`;
+        console.log(message);
         await sendTelegramMessage(message);
         return await spin(cookie, retries - 1);
     }
@@ -178,13 +179,13 @@ async function spinRewards() {
             if (dataPlayer) {
                 const pointPlayer = dataPlayer.player.point;
                 const totalSpin = Math.floor(pointPlayer / 10000);
-                console.log(totalSpin)
-                if (totalSpin >0){
+                console.log(totalSpin);
+                if ((totalSpin > 0) && (dataPlayer.player.accountName !== dataPlayer.player.connectedUid)) {
                     for (let i = 0; i < totalSpin; i++) {
                         const responseSpin = await spin(cookie);
                         if (responseSpin) {
                             const message = `Trúng thưởng: ${responseSpin.spinnedReward.name}-${responseSpin.spinnedReward.type}-${responseSpin.spinnedReward.giftCode}-${responseSpin.spinnedReward.shopeeCode}`;
-                            console.log(message)
+                            console.log(message);
                             const idBP = responseSpin.spinnedReward.id;
                             if (idBP !== 13) {
                                 const message = `Trúng thưởng: ${responseSpin.spinnedReward.name}-${responseSpin.spinnedReward.type}-${responseSpin.spinnedReward.giftCode}-${responseSpin.spinnedReward.shopeeCode}`;
@@ -193,16 +194,19 @@ async function spinRewards() {
                         }
                         await delay(35000);
                     }
-                }else {
-                    const message = `Tài khoản không đủ điểm để quay`;
+                } else {
+                    const message = `Tài khoản không đủ điều khiện để quay${token}`;
+                    console.log(message);
                     await sendTelegramMessage(message);
                 }
             } else {
                 const message = `Không thể lấy thông tin người chưa của token: ${token}`;
+                console.log(message)
                 await sendTelegramMessage(message);
             }
         } else {
             const message = `Không thể lấy cookie của token: ${token}`;
+            console.log(message)
             await sendTelegramMessage(message);
         }
     }
@@ -212,4 +216,3 @@ spinRewards().catch(async (error) => {
     const message = `Lỗi trong lần chạy đầu tiên: ${error.message}`;
     await sendTelegramMessage(message);
 });
-
